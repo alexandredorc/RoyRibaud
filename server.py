@@ -1,47 +1,31 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
+from typing import Union, Dict
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import List
-import pickle
-from player import Player
 
 app = FastAPI()
 
-# Enable CORS
-origins = ["*"]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: Union[bool, None] = None
 
-players = [Player(0, 0, 50, 50, (255, 0, 0)), Player(100, 100, 50, 50, (0, 0, 255))]
+# In-memory storage for items
+items: Dict[int, Item] = {}
 
-class PlayerUpdate(BaseModel):
-    x: int
-    y: int
-    width: int
-    height: int
-    color: tuple
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
 
-connected_clients = []
+@app.get("/items/{item_id}")
+def read_item(item_id: int):
+    if item_id in items:
+        return items[item_id]
+    else:
+        raise HTTPException(status_code=404, detail="Item not found")
 
-@app.websocket("/ws/{player_id}")
-async def websocket_endpoint(websocket: WebSocket, player_id: int):
-    await websocket.accept()
-    connected_clients.append(websocket)
-    try:
-        await websocket.send_bytes(pickle.dumps(players[player_id]))
-        while True:
-            data = await websocket.receive_bytes()
-            players[player_id] = pickle.loads(data)
-            reply = players[1] if player_id == 0 else players[0]
-            await websocket.send_bytes(pickle.dumps(reply))
-    except WebSocketDisconnect:
-        print(f"Player {player_id} disconnected")
-        connected_clients.remove(websocket)
-    except Exception as e:
-        print(f"Error: {e}")
-        connected_clients.remove(websocket)
+@app.put("/items/{item_id}")
+def update_item(item_id: int, item: Item):
+    items[item_id] = item
+    return {"item_name": item.name, "item_id": item_id}
+
+# To run the server, use the command: uvicorn main:app --host 0.0.0.0 --port 8000
