@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multiplayer Game Server</title>
+    <script>
+        let gameState = {
+            host: "",
+            client: "",
+            messageFromHost: "",
+            messageFromClient: ""
+        };
+
+        function handleRequest() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const role = urlParams.get('role');
+            const message = urlParams.get('message');
+
+            if (role && message) {
+                if (role === 'host') {
+                    gameState.messageFromHost = message;
+                } else if (role === 'client') {
+                    gameState.messageFromClient = message;
+                }
+            }
+
+            document.getElementById('game-state').textContent = JSON.stringify(gameState, null, 2);
+        }
+
+        window.onload = handleRequest;
+    </script>
+</head>
+<body>
+    <h1>Multiplayer Game Server</h1>
+    <pre id="game-state"></pre>
+</body>
+</html>
