@@ -1,50 +1,47 @@
-import socket
-from _thread import *
-from player import Player
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List
 import pickle
+from player import Player
 
-server = ""
-port = 5555
+app = FastAPI()
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# Enable CORS
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-try: 
-    s.bind((server,port))
-except socket.error as e:
-    str(e)
+players = [Player(0, 0, 50, 50, (255, 0, 0)), Player(100, 100, 50, 50, (0, 0, 255))]
 
-s.listen(2)
-print("Waiting for a connection, Server Started")
+class PlayerUpdate(BaseModel):
+    x: int
+    y: int
+    width: int
+    height: int
+    color: tuple
 
-players = [Player(0,0,50,50,(255,0,0)),Player(100,100,50,50,(0,0,255))]
+connected_clients = []
 
-def threaded_client(conn,player):
- 
-    conn.send(pickle.dumps(players[player]))
-    while True:
-        try:
-            data = pickle.loads(conn.recv(2048))
-            players[player] = data
-
-            if not data:
-                print("Disconnected")
-                break
-            else:
-                if player == 1:
-                    reply = players[0]
-                else:
-                    reply = players[1]
-
-            conn.sendall(pickle.dumps(reply))
-        except:
-            break
-    print("Lost connection")
-    conn.close()
-
-currentPlayer = 0
-while True:
-    conn, addr = s.accept()
-    print("Connected to:", addr)
-
-    start_new_thread(threaded_client, (conn, currentPlayer))
-    currentPlayer+=1
+@app.websocket("/ws/{player_id}")
+async def websocket_endpoint(websocket: WebSocket, player_id: int):
+    await websocket.accept()
+    connected_clients.append(websocket)
+    try:
+        await websocket.send_bytes(pickle.dumps(players[player_id]))
+        while True:
+            data = await websocket.receive_bytes()
+            players[player_id] = pickle.loads(data)
+            reply = players[1] if player_id == 0 else players[0]
+            await websocket.send_bytes(pickle.dumps(reply))
+    except WebSocketDisconnect:
+        print(f"Player {player_id} disconnected")
+        connected_clients.remove(websocket)
+    except Exception as e:
+        print(f"Error: {e}")
+        connected_clients.remove(websocket)
