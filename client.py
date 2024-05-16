@@ -1,31 +1,33 @@
-import requests
+import pygame as pg
+from network import Network
+from player import Player
 
-# URL of the GitHub Pages site
-server_url = "https://alexandredorc.github.io/RoyRibaud/"
+width = 500
+height = 500
+win = pg.display.set_mode((width,height))
+pg.display.set_caption("Client")
 
-def send_message(role, message):
-    params = {
-        'method': 'POST',
-        'message': message
-    }
-    response = requests.get(server_url, params=params)
-    return response.text
+def redrawWindow(win,player,player2):
+    win.fill((255,255,255))
+    player.draw(win,)
+    player2.draw(win)
+    pg.display.update()
 
-def get_game_state():
-    params = {
-        'method': 'GET'
-    }
-    response = requests.get(server_url, params=params)
-    return response.text
+def main():
+    run = True
+    n=Network()
+    p= n.getP()
+    clock = pg.time.Clock()
 
-# Example usage
-if __name__ == "__main__":
-    # Send a message
-    role = 'host'  # or 'client'
-    message = "Hello from Host"
-    send_response = send_message(role, message)
-    print(f"Send Response from server: {send_response}")
+    while run:
+        clock.tick(60)
+        p2 = n.send(p)
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                run = False
+                pg.quit()
 
-    # Get the game state
-    game_state_response = get_game_state()
-    print(f"Game State from server: {game_state_response}")
+        p.move()
+        redrawWindow(win,p,p2)
+
+main()
