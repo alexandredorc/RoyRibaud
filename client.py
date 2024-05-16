@@ -1,12 +1,11 @@
 import requests
 
 # URL of the GitHub Pages site
-server_url = "https://<your-username>.github.io/<your-repository>"
+server_url = "https://alexandredorc.github.io/RoyRibaud/"
 
 def send_message(role, message):
     params = {
         'method': 'POST',
-        'role': role,
         'message': message
     }
     response = requests.get(server_url, params=params)
