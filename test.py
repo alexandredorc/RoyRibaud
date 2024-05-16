@@ -2,7 +2,6 @@ import requests
 
 # URL of the FastAPI server
 base_url = "https://royribaud.onrender.com"
-base_url = "https://0.0.0.0"
 # Data to be sent in the PUT request
 item_data = {
     "name": "Test Item",
@@ -14,7 +13,7 @@ item_data = {
 item_id = 1
 
 # PUT request to update/create the item
-put_url = f"{base_url}:5555/{item_id}"
+put_url = f"{base_url}/{item_id}"
 
 print(put_url)
 response_put = requests.put(put_url, json=item_data)
@@ -28,7 +27,7 @@ else:
     print("Response:", response_put.text)
 
 # GET request to retrieve the item
-get_url = f"{base_url}:5555/{item_id}"
+get_url = f"{base_url}/{item_id}"
 response_get = requests.get(get_url)
 
 if response_get.status_code == 200:
