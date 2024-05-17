@@ -3,15 +3,15 @@ import base64
 import requests
 
 class Network:
-    def __init__(self, server="0.0.0.0", room=1):
-        self.uri = f"{server}/items/{room}"
-        self.room = room
+    def __init__(self, server="0.0.0.0:5555"):
+        self.uri = server
+        print(self.uri)
     
     def send(self,data):
         response_put = requests.put(self.uri, json=serialize(data))
 
-        if response_put.status_code == 200 or response_put.status_code == 500:
-            return 1
+        if response_put.status_code == 200:
+            return response_put.json()
         else:
             print("PUT request failed")
             print("Status code:", response_put.status_code)
@@ -29,7 +29,7 @@ class Network:
             return 0
             
 def serialize(data):
-    item_data = {"content": base64.b64encode(pickle.dumps(data)).decode('utf-8')}
+    item_data = {"content": f"{base64.b64encode(pickle.dumps(data)).decode('utf-8')}"}
     return item_data
 
 def deserialize(data):

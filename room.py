@@ -3,4 +3,6 @@ class Room:
         self.nbPlayerMax = 2
         self.roomNumber = number
         self.status = True
+        self.playerConnected = 1
         
+    
