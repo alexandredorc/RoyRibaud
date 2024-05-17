@@ -1,27 +1,41 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Dict
-from network import Network
+from room import Room
+from action import Action
+from network import serialize, deserialize
 
 class Server:
     def __init__(self):
         self.rooms = []
 
+    def findRoom(self, number):
+        for room in self.rooms:
+            if room.roomNumber == number:
+                return room
+        return None
+
+    def createRoom(self,number):
+        newRoom = Room(number)
+        self.room.append(newRoom)
+        print(f"The room {number} is created")
+        
 
 app = FastAPI()
 server = Server()
-n=Network()
+
 
 class Item(BaseModel):
     content: bytes
 
+items: Dict[int, Item] = {}
 
 @app.get("/")
-def read_root():
+async def read_root():
     return {"Hello": "World"}
 
 @app.get("/items/{item_id}")
-def read_item(item_id: int):
+async def read_item(item_id: int):
     if item_id in server.items:
         print(item_id)
         return server.items[item_id]
@@ -29,10 +43,9 @@ def read_item(item_id: int):
         raise HTTPException(status_code=404, detail="Item not found")
 
 @app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
+async def update_item(item_id: int, item: Item):
     print(item,item_id)
-
+    print(items[item_id])
+    if isinstance(items[item_id],Action) and items[item_id].type == "create":
+        server.createRoom(items[item_id].info)
     return {"item_name": item.name, "item_id": item_id}
-
-while True:
-    print(server.items)
