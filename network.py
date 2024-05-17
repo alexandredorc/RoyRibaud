@@ -1,52 +1,66 @@
-import asyncio
-import websockets
 import pickle
+import base64
+
+import requests
+
+# URL of the FastAPI server
+base_url = "https://royribaud.onrender.com"
+# Data to be sent in the PUT request
+item_data = {
+    "name": "Test Item",
+    "price": 15.99,
+    "is_offer": True
+}
 
 class Network:
-    def __init__(self, server="192.168.100.174", port=5555, player_id=0):
-        self.server = server
-        self.port = port
+    def __init__(self, server=base_url, room=1, player_id=0):
+        get_url = f"{base_url}/items/{room}"
+        self.room = room
         self.player_id = player_id
-        self.uri = f"ws://{self.server}:{self.port}/ws/{self.player_id}"
+        self.uri = f"https://{get_url}"
         self.websocket = None
         self.p = None
 
-    async def connect(self):
-        try:
-            self.websocket = await websockets.connect(self.uri)
-            self.p = pickle.loads(await self.websocket.recv())
-            return self.p
-        except Exception as e:
-            print(f"Error connecting: {e}")
+    def serialize(self,data):
+        return base64.b64encode(data).decode('utf-8')
+    
+    def send(self,data):
+        bit_data= pickle.dumps(data)
+        item_data = {
+            "content": self.serialize(bit_data)
+        }
+        print(item_data)
+        response_put = requests.put(self.uri, json=item_data)
 
-    async def send(self, data):
-        try:
-            await self.websocket.send(pickle.dumps(data))
-            reply = pickle.loads(await self.websocket.recv())
-            return reply
-        except Exception as e:
-            print(f"Error sending data: {e}")
+        if response_put.status_code == 200:
+            print("PUT request successful")
+            print("Response:", response_put.json())
+            print(pickle.loads(response_put.json().content))
+        else:
+            print("PUT request failed")
+            print("Status code:", response_put.status_code)
+            print("Response:", response_put.text)
 
-    async def close(self):
-        if self.websocket:
-            await self.websocket.close()
+    def get(self):
+        
+        response_get = requests.get(self.uri)
+        if response_get.status_code == 200:
+            print("GET request successful")
+            print("Response:", response_get.json())
+        else:
+            print("GET request failed")
+            print("Status code:", response_get.status_code)
+            print("Response:", response_get.text)
+            
+        return pickle.loads(response_get.json().content)
 
     def getP(self):
         return self.p
+print("init")
+n=Network(base_url)
+print("send")
+data=[0,0,0,12]
+n.send(data)
 
-# Example usage
-async def main():
-    network = Network(player_id=0)  # or player_id=1 for the second player
-    await network.connect()
-    player = network.getP()
-    print("Initial player state:", player)
-    
-    # Example of sending player data and receiving a reply
-    updated_player = player  # Modify player as needed
-    response = await network.send(updated_player)
-    print("Received updated state of the other player:", response)
-    
-    await network.close()
-
-# Run the example
-asyncio.run(main())
+print("get")
+print(n.get())
