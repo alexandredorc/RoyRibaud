@@ -44,22 +44,26 @@ def read_item(item_id: int):
     
 @app.put("/login")
 def update_item( item: Item):
-    print(item)
     decoded_item=deserialize(item)
-    print(decoded_item)
-    if isinstance(decoded_item,Action) and decoded_item.type == "connect":
-        nbPlayer = -1
-        room = server.findRoom(decoded_item.info)
-        if room is None:
-            server.createRoom(decoded_item.info)
-            nbPlayer = 0
-        else:
-            nbPlayer = room.playerConnected
-            room.playerConnected += 1
-            if nbPlayer + 1 >= room.nbPlayerMax:
-                server.status = "play"
-                print("lets play!!")
-        return nbPlayer
+    if isinstance(decoded_item,Action):
+        if decoded_item.type == "connect":
+            nbPlayer = -1
+            room = server.findRoom(decoded_item.info)
+            if room is None:
+                server.createRoom(decoded_item.info)
+                nbPlayer = 0
+            else:
+                nbPlayer = room.playerConnected
+                room.playerConnected += 1
+                if nbPlayer + 1 >= room.nbPlayerMax:
+                    server.status = "play"
+                    print("lets play!!")
+            return nbPlayer
+        if decoded_item.type == "check":
+            room = server.findRoom(decoded_item.info)
+            if room is not None and room.playerConnected >= room.nbPlayerMax:
+                return True
+            return False
     return 2
 
 @app.put("/items/{item_id}")
