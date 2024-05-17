@@ -17,7 +17,8 @@ class Network:
         get_url = f"{base_url}/items/{room}"
         self.room = room
         self.player_id = player_id
-        self.uri = f"https://{get_url}"
+        self.uri = f"{get_url}"
+        print(self.uri)
         self.websocket = None
         self.p = None
 
@@ -52,7 +53,7 @@ class Network:
             print("Status code:", response_get.status_code)
             print("Response:", response_get.text)
             
-        return pickle.loads(response_get.json().content)
+        return 0
 
     def getP(self):
         return self.p

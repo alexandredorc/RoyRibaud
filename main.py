@@ -5,9 +5,7 @@ from pydantic import BaseModel
 app = FastAPI()
 
 class Item(BaseModel):
-    name: str
-    price: float
-    is_offer: Union[bool, None] = None
+    content: bytes
 
 # In-memory storage for items
 items: Dict[int, Item] = {}
