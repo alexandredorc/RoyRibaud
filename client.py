@@ -11,14 +11,14 @@ class Client:
         self.height = 500
         self.win = pg.display.set_mode((self.width,self.height))
         self.room = -1
-        while self.room <= 0 and 9999 <= self.room:
-            txt = input()
+        while self.room <= 0 or 9999 <= self.room:
+            txt = input("put your room number:")
             if txt.isnumeric() and self.testRoomAvailable(int(txt)):
                 self.room = int(txt)
         self.server=Network("https://royribaud.onrender.com",self.room)
         print(f"The room number is {self.room}")
-        self.createRooom(self)
-        self.pg.display.set_caption("Client")
+        self.createRooom()
+        pg.display.set_caption("Client")
 
     def testRoomAvailable(self,room):
         if room != -1:

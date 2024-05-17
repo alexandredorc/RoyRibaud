@@ -37,9 +37,9 @@ async def read_root():
 
 @app.get("/items/{item_id}")
 async def read_item(item_id: int):
-    if item_id in server.items:
+    if item_id in items:
         print(item_id)
-        return server.items[item_id]
+        return items[item_id]
     else:
         raise HTTPException(status_code=404, detail="Item not found")
 
