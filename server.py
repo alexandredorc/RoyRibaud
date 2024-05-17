@@ -5,7 +5,7 @@ from pydantic import BaseModel
 app = FastAPI()
 
 class Item(BaseModel):
-    content: str
+    content: bytes
 
 # In-memory storage for items
 items: Dict[int, Item] = {}
