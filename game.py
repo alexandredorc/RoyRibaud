@@ -1,5 +1,7 @@
 import pygame
 import random
+from player import Player
+from card import Card
 # 0 = A/ 1 = J/ 2 = Q/ 3 = K
 
 class Game:
@@ -119,34 +121,6 @@ class Game:
         else:
             return False
 
-class Player:
-    def __init__(self, idx, cards):
-        self.cards = cards
-        self.idx = idx
-        self.wins = 0
-    
-    def showPlayerHand(self):
-        print(f"\nplayer {self.idx} hand is:")
-        for c in self.cards:
-            print(c.name)
 
-class Card:
-    def __init__(self, typeCard, visible = False):
-        self.typeCard = typeCard
-        self.typeCardName()
-        self.visible = visible
-
-    def typeCardName(self):
-        if self.typeCard == 0:
-            self.name = 'Assasin'
-        if self.typeCard == 1:
-            self.name = 'Chevalier'
-        if self.typeCard == 2:
-            self.name = 'Reine'
-        if self.typeCard == 3:
-            self.name = 'Roi'
-
-    def returnCard(self):
-        self.visible = not self.visible
 
 g = Game()

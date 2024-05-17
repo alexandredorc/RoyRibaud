@@ -4,10 +4,10 @@ import base64
 import requests
 
 class Network:
-    def __init__(self, server="0.0.0.0", room=1, player_id=0):
+    def __init__(self, server="0.0.0.0", room=1):
         self.uri = f"{server}/items/{room}"
         self.room = room
-        self.player_id = player_id
+       
 
     def serialize(self,data):
         item_data = {"content": base64.b64encode(pickle.dumps(data)).decode('utf-8')}
