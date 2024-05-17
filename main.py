@@ -3,7 +3,8 @@ from pydantic import BaseModel
 from typing import Dict
 from room import Room
 from action import Action
-from network import serialize, deserialize
+import base64
+import pickle
 
 class Server:
     def __init__(self):
@@ -49,3 +50,11 @@ async def update_item(item_id: int, item: Item):
     if isinstance(items[item_id],Action) and items[item_id].type == "create":
         server.createRoom(items[item_id].info)
     return {"item_name": item.name, "item_id": item_id}
+
+     
+def serialize(data):
+    item_data = {"content": base64.b64encode(pickle.dumps(data)).decode('utf-8')}
+    return item_data
+
+def deserialize(data):
+    return pickle.loads(base64.b64decode(data['content']))

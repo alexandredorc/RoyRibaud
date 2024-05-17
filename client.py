@@ -1,6 +1,7 @@
 import pygame as pg
 from network import Network
 from player import Player
+from action import Action
 
 
 class Client:
@@ -13,19 +14,18 @@ class Client:
         while self.room <= 0 and 9999 <= self.room:
             txt = input()
             if txt.isnumeric() and self.testRoomAvailable(int(txt)):
-                break
-
+                self.room = int(txt)
+        self.server=Network("https://royribaud.onrender.com",self.room)
         print(f"The room number is {self.room}")
-
-        self.server=Network("https://royribaud.onrender.com",1)
+        self.createRooom(self)
         self.pg.display.set_caption("Client")
 
     def testRoomAvailable(self,room):
         if room != -1:
             return True
         
-    def createRooom(self,room):
-        self.server.send()
+    def createRooom(self):
+        self.server.send(Action("create",self.room))
 
 
 def redrawWindow(win):
