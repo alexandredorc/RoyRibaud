@@ -15,7 +15,7 @@ def redrawWindow(win,player,player2):
 
 def main():
     run = True
-    n=Network()
+    n=Network("https://royribaud.onrender.com",1,0)
     p= n.getP()
     clock = pg.time.Clock()
 
