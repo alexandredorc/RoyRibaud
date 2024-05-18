@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Dict
 from room import Room
+from game import Game
 from action import Action
 import base64
 import pickle
@@ -34,13 +35,6 @@ items: Dict[int, Item] = {}
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int):
-    if item_id in items:
-        return items[item_id]
-    else:
-        raise HTTPException(status_code=404, detail="Item not found")
     
 @app.put("/login")
 def update_item( item: Item):
@@ -66,15 +60,39 @@ def update_item( item: Item):
             return False
     return 2
 
+@app.get("/items/{item_id}")
+def read_game(item_id: int):
+    try:
+        room = server.findRoom(item_id)
+        if isinstance(room.game,Game):
+
+            return serialize(room.game)
+    except:
+        if item_id in items:
+            return items[item_id]
+        else:
+            raise HTTPException(status_code=404, detail="Item not found")
+
 @app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    items[item_id] = item
-    decoded_item=deserialize(item)
-    print("lets get playing",decoded_item)
-    return {"item_name": item.content, "item_id": item_id}
+def update_game(item_id: int, item: Item):
+    print("put game")
+    try:
+        items[item_id] = item
+        decoded_item=deserialize(item)
+        room = server.findRoom(item_id)
+        if isinstance(room.game,Game):
+            
+            room.game = decoded_item
+            print("its players turn: ",room.game.currentPlayerId)
+            return True
+
+        return False
+    except:
+        return False
+    
 
 def serialize(data):
-    item_data = "{\"content\": \""+base64.b64encode(pickle.dumps(data)).decode('utf-8')+"\"}"
+    item_data = {"content": f"{base64.b64encode(pickle.dumps(data)).decode('utf-8')}"}
     return item_data
 
 def deserialize(data):

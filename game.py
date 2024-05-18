@@ -6,6 +6,7 @@ from card import Card
 
 class Game:
     def __init__(self):
+        self.firstPlayer = random.randint(0,1)
         self.players = []
         self.createPlayer()
         self.initDeck()
@@ -14,7 +15,7 @@ class Game:
         self.dealCards()
         self.CheckPlayersDoubleQueen()
         self.displayCourt()
-        self.currentPlayer = self.players[0]
+        self.currentPlayerId = self.firstPlayer
         self.in_game = True
 
     def initDeck(self):
@@ -90,7 +91,7 @@ class Game:
     
     def testWeddingVictory(self):
         count = 0
-        for c in self.currentPlayer.cards:
+        for c in self.players[self.currentPlayerId].cards:
             if c.typeCard == 2:
                 count += 1
         if count == 3:
