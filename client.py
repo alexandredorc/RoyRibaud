@@ -59,7 +59,7 @@ def redrawWindow(win):
 
 def main():
     run = True
-    myClient = Client("http://0.0.0.0:5555")
+    myClient = Client()
     clock = pg.time.Clock()
 
     while run:
