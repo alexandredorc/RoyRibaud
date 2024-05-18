@@ -52,7 +52,7 @@ class Game:
                     index.append(i)
             index.sort(reverse=True)
             if len(index)==2:
-                print(f"player {player.idx} has a double queen")
+                print(f"Le Joueur {player.idx} à une Double")
                 new_card = []
                 queens_card = []
                 for i in index:
@@ -102,28 +102,28 @@ class Game:
         return False
     
     def AssassinEffect(self):
-        card1 = int(input("give the index of the card you want to watch 1-4: ")) -1
-        card2 = int(input("give the index of the next card you want to watch 1-4: ")) -1
+        card1 = int(input("Donne le numéro de la carte de la court que tu veux regarder 1-4: ")) -1
+        card2 = int(input("Donne le numéro de la carte de la court que tu veux regarder  1-4: ")) -1
 
         print(self.court_cards[card1].name)
         print(self.court_cards[card2].name)
         print()
     
     def KnightEffect(self):
-        card1 = int(input("give the index of the first card you want to swap 1-4: ")) -1
+        card1 = int(input("Donne le numéro de la carte de la court que tu veux échanger 1-4: ")) -1
         card2 = card1
         while card2 == card1:
-            card2 = int(input("give the index of the next card you want to swap 1-4: ")) -1
+            card2 = int(input("Donne le numéro de la carte de la court que tu veux échanger 1-4: ")) -1
         self.swapCourtCards(card1,card2)
-        card = int(input("give the index of the card you want to return 1-4 : ")) -1
+        card = int(input("Donne le numéro de la carte de la court que tu veux retourner 1-4 : ")) -1
         self.court_cards[card].visible = not self.court_cards[card].visible
         self.displayCourt()
       
     def QueenEffect(self):
-        card1 = int(input("give the index of the first player card you want to watch 1-3: ")) -1
+        card1 = int(input("Donne le numéro de la carte du joueur adverse que tu veux regargé 1-3: ")) -1
         card2 = card1
         while card2 == card1:
-            card2 = int(input("give the index of the next player card you want to swap 1-3: ")) -1
+            card2 = int(input("Donne le numéro de la carte du joueur adverse que tu veux regargé 1-3: ")) -1
         nextPlayerID = abs(self.currentPlayerId -1)
         cardPlayer1 = self.players[nextPlayerID].cards[card1]
         cardPlayer2 = self.players[nextPlayerID].cards[card2]
@@ -139,16 +139,16 @@ class Game:
             self.deck.append(cardPlayer2)
 
     def KingEffect(self):
-        action = int(input("type 1: to return a card and activate its effect; type 2: to pick two card from the deck: "))
+        action = int(input("tape 1: pour retourner une carte et activé sa capacité; tape 2: pour choisir deux cartes de la pioche et reposer deux cartes: "))
         if action == 1:
-            card = int(input("give the index of the first card you want to return 1-4: ")) -1
+            card = int(input("Donne le numéro de la carte de la court que tu veux retourner  1-4: ")) -1
             self.returnCourtCard(card)
         if action == 2:
             self.players[self.currentPlayerId].cards.append(self.deck.pop(0))
             self.players[self.currentPlayerId].cards.append(self.deck.pop(0))
             self.players[self.currentPlayerId].showPlayerHand()
-            card1 = int(input("give the index of your hand you want to remove 1-5: ")) -1
-            card2 = int(input("give the index of your hand you want to remove 1-5: ")) -1
+            card1 = int(input("Donne le numéro de la carte de ta main que tu veux retirer  1-5: ")) -1
+            card2 = int(input("Donne le numéro de la carte de ta main que tu veux retirer 1-5: ")) -1
             cardPlayer1 = self.players[self.currentPlayerId].cards[card1]
             cardPlayer2 = self.players[self.currentPlayerId].cards[card2]
             cards=[card1,card2]
@@ -172,7 +172,7 @@ class Game:
             os.system('clear')
 
     def displayCourt(self):
-        print("\nCourt Cards are:")
+        print("\n Les cartes de la court sont:")
         for c in self.court_cards:
             if c.visible:
                 print(c.name)
@@ -240,14 +240,14 @@ class Game:
         self.players[self.currentPlayerId].showPlayerHand()
         if self.testWeddingVictory():
             return True
-        action = int(input("your turn to play - turn card 1, replace card 2: "))
+        action = int(input("A ton tour de jouer - tape 1: pour retourner, tape 2 pour remplacer: "))
         if action == 1:
-            card = int(input("select one of the deck card from 1 - 4: "))-1
+            card = int(input("choisit une carte de la court à retourner 1 - 4: "))-1
             self.returnCourtCard(card)
         elif action == 2:
-            playercard = int(input("select one of my card from 1 - 3: "))-1
-            courtcard = int(input("select one of the court card from 1 - 4: "))-1
-            visibility = int(input("put 1 to set visible 0 not visible: "))
+            playercard = int(input("Choisit une carte de la main à échanger 1 - 3: "))-1
+            courtcard = int(input("choisit une carte de la court à prendre 1 - 4: "))-1
+            visibility = int(input("mettre 1 pour mettre la carte face visible & 0 pour face caché: "))
             self.swapCourtPlayerCards(courtcard,playercard,visibility)
         else:
             print('you dumb!')
