@@ -34,7 +34,7 @@ class Client:
         
         print("C'est partie pour jouer")
         self.server=Network(f"{self.uri}/items/{self.room}")
-        self.clientGameLoop()
+        
         
     def waitOtherPlayer(self):
         print("Waiting for the other player to play")
@@ -47,12 +47,18 @@ class Client:
 
     def clientGameLoop(self):
         self.currentGame=self.server.get()
+        self.currentGame.clearTerminal()
         while True:
             self.waitOtherPlayer()
             if self.currentGame.clientTurn():
                 print("this is a win for you")
+                self.currentGame.showAllCards()
+                self.currentGame = Game()
+                self.server.send(self.currentGame)
+                break
             self.currentGame.currentPlayerId = abs(self.currentGame.currentPlayerId - 1)
             self.server.send(self.currentGame)
+        
 
 def redrawWindow(win):
     pass
@@ -63,6 +69,7 @@ def main():
     clock = pg.time.Clock()
 
     while run:
+        myClient.clientGameLoop()
         clock.tick(60)
         for event in pg.event.get():
             if event.type == pg.QUIT:

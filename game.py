@@ -1,7 +1,10 @@
-import pygame
+import pygame as pg
 import random
+import os
 from player import Player
 from card import Card
+import time
+
 # 0 = A/ 1 = J/ 2 = Q/ 3 = K
 
 class Game:
@@ -62,14 +65,112 @@ class Game:
     def swapCourtPlayerCards(self, courtIndex, playerIndex,visibility):
         self.court_cards[courtIndex], self.players[self.currentPlayerId].cards[playerIndex]= self.players[self.currentPlayerId].cards[playerIndex], self.court_cards[courtIndex]
         self.court_cards[courtIndex].visible=bool(visibility)
+        self.displayCourt()
+        if visibility:
+            if self.cardEffect(self.court_cards[courtIndex].typeCard):
+                return True
+            else: 
+                return False
 
     def swapCourtCards(self, index1, index2):
         self.court_cards[index1], self.court_cards[index2]= self.court_cards[index2], self.court_cards[index1]
+        self.displayCourt()
         
-    
     def returnCourtCard(self,index):
         self.court_cards[index].visible = not self.court_cards[index].visible
+        self.displayCourt()
+        if self.court_cards[index].visible:
+            if self.cardEffect(self.court_cards[index].typeCard):
+                return True
+            else: 
+                return False
     
+    def cardEffect(self,typeCard):
+        if self.testAssassinVictory() or self.testCoronationVictory():
+            return True
+        
+        if typeCard == 0:
+            self.AssassinEffect()
+        if typeCard == 1:
+            self.KnightEffect()
+        if typeCard == 2:
+            self.QueenEffect()
+        if typeCard == 3:
+            self.KingEffect()
+        if self.testAssassinVictory() or self.testCoronationVictory():
+            return True
+        return False
+    
+    def AssassinEffect(self):
+        card1 = int(input("give the index of the card you want to watch 1-4: ")) -1
+        card2 = int(input("give the index of the next card you want to watch 1-4: ")) -1
+
+        print(self.court_cards[card1].name)
+        print(self.court_cards[card2].name)
+        print()
+    
+    def KnightEffect(self):
+        card1 = int(input("give the index of the first card you want to swap 1-4: ")) -1
+        card2 = card1
+        while card2 == card1:
+            card2 = int(input("give the index of the next card you want to swap 1-4: ")) -1
+        self.swapCourtCards(card1,card2)
+        card = int(input("give the index of the card you want to return 1-4 : ")) -1
+        self.court_cards[card].visible = not self.court_cards[card].visible
+        self.displayCourt()
+      
+    def QueenEffect(self):
+        card1 = int(input("give the index of the first player card you want to watch 1-3: ")) -1
+        card2 = card1
+        while card2 == card1:
+            card2 = int(input("give the index of the next player card you want to swap 1-3: ")) -1
+        nextPlayerID = abs(self.currentPlayerId -1)
+        cardPlayer1 = self.players[nextPlayerID].cards[card1]
+        cardPlayer2 = self.players[nextPlayerID].cards[card2]
+        print(cardPlayer1.name)
+        print(cardPlayer2.name)
+        if cardPlayer1.typeCard == 2:
+            self.players[nextPlayerID].cards.pop(card1)
+            self.players[nextPlayerID].cards.append(self.deck.pop(0))
+            self.deck.append(cardPlayer1)
+        if cardPlayer2.typeCard == 2:
+            self.players[nextPlayerID].cards.pop(card2)
+            self.players[nextPlayerID].cards.append(self.deck.pop(0))
+            self.deck.append(cardPlayer2)
+
+    def KingEffect(self):
+        action = int(input("type 1: to return a card and activate its effect; type 2: to pick two card from the deck: "))
+        if action == 1:
+            card = int(input("give the index of the first card you want to return 1-4: ")) -1
+            self.returnCourtCard(card)
+        if action == 2:
+            self.players[self.currentPlayerId].cards.append(self.deck.pop(0))
+            self.players[self.currentPlayerId].cards.append(self.deck.pop(0))
+            self.players[self.currentPlayerId].showPlayerHand()
+            card1 = int(input("give the index of your hand you want to remove 1-5: ")) -1
+            card2 = int(input("give the index of your hand you want to remove 1-5: ")) -1
+            cardPlayer1 = self.players[self.currentPlayerId].cards[card1]
+            cardPlayer2 = self.players[self.currentPlayerId].cards[card2]
+            cards=[card1,card2]
+            print(cards)
+            cards.sort(reverse=True)
+            print(cards)
+            self.players[self.currentPlayerId].cards.pop(cards[0])
+            self.deck.append(cardPlayer1)
+            self.players[self.currentPlayerId].cards.pop(cards[1])
+            self.deck.append(cardPlayer2)
+            self.players[self.currentPlayerId].showPlayerHand()
+            print()
+    
+
+    def clearTerminal(self):
+        if os.name == 'nt':
+            # For Windows
+            os.system('cls')
+        else:
+            # For Mac and Linux (posix systems)
+            os.system('clear')
+
     def displayCourt(self):
         print("\nCourt Cards are:")
         for c in self.court_cards:
@@ -92,6 +193,10 @@ class Game:
         print("\ndeck rest cards")
         for c in self.deck:
             print(c.name, c.visible)
+        
+        print("Clearing in progress!")
+        time.sleep(10)
+        self.clearTerminal()
     
     def testWeddingVictory(self):
         count = 0
@@ -99,6 +204,7 @@ class Game:
             if c.typeCard == 2:
                 count += 1
         if count == 3:
+            print("Victoire Royal: Le Mariage")
             return True
         else:
             return False
@@ -109,6 +215,7 @@ class Game:
             if c.typeCard == 3 and c.visible:
                 count += 1
         if count >= 3:
+            print("Victoire Royal: Le Couronnement")
             return True
         else:
             return False
@@ -122,12 +229,13 @@ class Game:
                     count += 1
 
         if count >= 3:
+            print("Victoire Royal: L'Assassinat")
             return True
         else:
             return False
 
     def clientTurn(self):
-        
+        self.clearTerminal()
         self.displayCourt()
         self.players[self.currentPlayerId].showPlayerHand()
         if self.testWeddingVictory():
@@ -137,8 +245,8 @@ class Game:
             card = int(input("select one of the deck card from 1 - 4: "))-1
             self.returnCourtCard(card)
         elif action == 2:
-            courtcard = int(input("select one of the court card from 1 - 4: "))-1
             playercard = int(input("select one of my card from 1 - 3: "))-1
+            courtcard = int(input("select one of the court card from 1 - 4: "))-1
             visibility = int(input("put 1 to set visible 0 not visible: "))
             self.swapCourtPlayerCards(courtcard,playercard,visibility)
         else:
