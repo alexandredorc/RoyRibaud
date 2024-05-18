@@ -34,42 +34,32 @@ class Client:
         
         print("C'est partie pour jouer")
         self.server=Network(f"{self.uri}/items/{self.room}")
-        while True:
-            print("Waiting for the other player to play")
-            while True:
-                time.sleep(0.5)
-                self.currentGame=self.server.get()
-                if self.currentGame.currentPlayerId == self.playerId:
-                    break
-            
-            self.currentGame.displayCourt()
-            mycards= self.getMyCards()
-            txt=input("your turn to play")
-            self.currentGame.currentPlayerId = abs(self.currentGame.currentPlayerId - 1)
-            self.server.send(self.currentGame)
-
-
-
-    def getMyCards(self):
-        self.currentGame.players[self.playerId].showPlayerHand()
-        return self.currentGame.players[self.playerId].cards
+        self.clientGameLoop()
         
     def waitOtherPlayer(self):
-        print("Wait until the next player as finish playing")
+        print("Waiting for the other player to play")
         while True:
-            time.sleep(1)
-            game=self.server.get()
-            if isinstance(game,Game) and game.currentPlayer == self.playerId:
+            time.sleep(0.5)
+            self.currentGame=self.server.get()
+            if isinstance(self.currentGame,Game) and self.currentGame.currentPlayerId == self.playerId:
                 break
         print("Its your turn to play!")
 
+    def clientGameLoop(self):
+        self.currentGame=self.server.get()
+        while True:
+            self.waitOtherPlayer()
+            if self.currentGame.clientTurn():
+                print("this is a win for you")
+            self.currentGame.currentPlayerId = abs(self.currentGame.currentPlayerId - 1)
+            self.server.send(self.currentGame)
 
 def redrawWindow(win):
     pass
 
 def main():
     run = True
-    myClient = Client()
+    myClient = Client("http://0.0.0.0:5555")
     clock = pg.time.Clock()
 
     while run:

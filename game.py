@@ -58,10 +58,14 @@ class Game:
                 for i in range(2):
                     player.cards.append(new_card[i])
                     self.deck.append(queens_card[i])
-                
-        
+
+    def swapCourtPlayerCards(self, courtIndex, playerIndex,visibility):
+        self.court_cards[courtIndex], self.players[self.currentPlayerId].cards[playerIndex]= self.players[self.currentPlayerId].cards[playerIndex], self.court_cards[courtIndex]
+        self.court_cards[courtIndex].visible=bool(visibility)
+
     def swapCourtCards(self, index1, index2):
         self.court_cards[index1], self.court_cards[index2]= self.court_cards[index2], self.court_cards[index1]
+        
     
     def returnCourtCard(self,index):
         self.court_cards[index].visible = not self.court_cards[index].visible
@@ -122,6 +126,30 @@ class Game:
         else:
             return False
 
+    def clientTurn(self):
+        
+        self.displayCourt()
+        self.players[self.currentPlayerId].showPlayerHand()
+        if self.testWeddingVictory():
+            return True
+        action = int(input("your turn to play - turn card 1, replace card 2: "))
+        if action == 1:
+            card = int(input("select one of the deck card from 1 - 4: "))-1
+            self.returnCourtCard(card)
+        elif action == 2:
+            courtcard = int(input("select one of the court card from 1 - 4: "))-1
+            playercard = int(input("select one of my card from 1 - 3: "))-1
+            visibility = int(input("put 1 to set visible 0 not visible: "))
+            self.swapCourtPlayerCards(courtcard,playercard,visibility)
+        else:
+            print('you dumb!')
+            return False
+
+        if self.testCoronationVictory():
+            return True
+        if self.testAssassinVictory():
+            return True
+        self.displayCourt()
+        return False
 
 
-g = Game()
