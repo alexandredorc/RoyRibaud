@@ -78,6 +78,8 @@ class Game:
         
     def returnCourtCard(self,index):
         self.court_cards[index].visible = not self.court_cards[index].visible
+        if self.testCoronationVictory() or self.testAssassinVictory():
+            return True
         self.displayCourt()
         if self.court_cards[index].visible:
             if self.cardEffect(self.court_cards[index].typeCard):
@@ -115,6 +117,8 @@ class Game:
         while card2 == card1:
             card2 = int(input("Donne le numéro de la carte de la court que tu veux échanger 1-4: ")) -1
         self.swapCourtCards(card1,card2)
+        if self.testAssassinVictory() or self.testCoronationVictory():
+            return True
         card = int(input("Donne le numéro de la carte de la court que tu veux retourner 1-4 : ")) -1
         self.court_cards[card].visible = not self.court_cards[card].visible
         self.displayCourt()
@@ -221,18 +225,16 @@ class Game:
             return False
         
     def testAssassinVictory(self):
-        count = 0
         for i in range(2):
+            count = 0
             for j in range(3):
                 idx = i+j
                 if self.court_cards[idx].visible and (j == 1 or self.court_cards[idx].typeCard == 0):
                     count += 1
-
-        if count >= 3:
-            print("Victoire Royal: L'Assassinat")
-            return True
-        else:
-            return False
+            if count >= 3:
+                print("Victoire Royal: L'Assassinat")
+                return True
+        return False
 
     def clientTurn(self):
         self.clearTerminal()
