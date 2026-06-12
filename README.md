@@ -1,30 +1,75 @@
-# Le Roy des Ribauds:
-## Régles
-c'est un jeux des stratégie au tour par tour qui fait s'affronté deux joueurs. qui contiens 4 cartes avec 4 figure différente qui ont des chacun des capacités spéciale:
-- Assassin
-- Chevalier
-- Reine
-- Roi
+# Le Roy des Ribauds
 
-Chaque joueurs possède une main de 3 cartes et une "Court" composé de 4 cartes est placé entre eux au départ face caché. 
-L'objectif de ce jeux est de provoqué l'une des trois victoire possible avant sont adversaire.
+Turn-based 2-player card game with a FastAPI backend and a browser frontend.
 
-- Victoire "Mariage": Cette victoire est obtenue lors  qu'un joueur "Commence" un tour avec 3 Reines.
-- Victoire "Courronnement": Cette victoire est obtenue lors qu'à n'importe quelle moment de son tour un Joueur fait apparaitre 3 Roi face visible sur la court.
-- Victoire "Assassinat": Cette vicotire est obtenue lors qu'à n'importe quelle moment de son tour un Joueur fait apparaitre N'importe carte face visible sur la court entouré de 2 Assassin face visible.
+## Project structure
 
-Afin d'atteindre une de ces victoire on peut retourner une cartes de la court ou en échangeant les cartes de sa main avec les cartes de la court face caché ou face visible.
+- `domain/`
+- `domain/entities/`: Core entities (`Card`, `Player`)
+- `domain/game/`: Game aggregate and rule engine (`core`, `actions`, `legacy`)
+- `domain/room.py`: Room aggregate
+- `application/`
+- `application/server.py`: Room lifecycle and orchestration service
+- `application/dto/`: Application DTOs (`Action`)
+- `infrastructure/`
+- `infrastructure/web/api.py`: FastAPI transport layer
+- `infrastructure/web/static/`: Browser frontend assets
+- `infrastructure/network/legacy_network.py`: Legacy HTTP/pickle client transport
+- `infrastructure/cli/legacy_client.py`: Legacy CLI client
+- `main.py`: Entry point exposing `app`
 
-Chaque figures à des capacités spécifique qui s'active lors que un Joueur pose la carte sur la court face visible: 
+## Rules summary
 
-- Assassin : l'utilisation de cette carte est de regarder 2 cartes face caché de la court, (elle permet juste de les voir pas de les révéler)
+Each player has 3 cards in hand.
+A shared court has 4 cards.
+Win with one of these conditions:
 
-- Chevalier : l'utilisation de cette carte est d'échanger la position de 2 cartes sur la court; ensuite le joueur doit retourner n'importe quelle carte, cependant la capacité de la carte retourner ne s'active pas
+- Wedding: start your turn with 3 Queens in hand.
+- Coronation: reveal 3 Kings on the court.
+- Assassination: reveal any visible card surrounded by 2 visible Assassins.
 
-- Reine : l'utilisation de cette carte permet au joueur de regarder au choix 2 des cartes de l'adversaire, si une ou plusieurs Reine sont révélé elle sont mis en bas de la pioche et le joueur d'adverse doit alors compléter sa main en piochant suffisament de carte afin d'en avoir 3.
+Card effects when a card is revealed on court:
 
-- Roi : l'utilisation de cette permet au joueur de choisir entre 2 actions possible:
+- Assassin: peek at 2 court cards.
+- Knight: swap 2 court cards, then flip one court card (no effect triggered).
+- Queen: inspect 2 enemy hand cards; remove revealed Queens and replace from deck.
+- King: choose either flip mode or draw/discard mode.
 
-     * Cette action: permet de piocher deux cartes de la 
+## Run locally
 
-    * Cette action permet de retourner une carte sur la court et ensuite d'activé la capacité de la carte retourné:
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start server:
+
+```bash
+uvicorn main:app --reload
+```
+
+This command runs the FastAPI app from `main.py` and auto-reloads when files change.
+
+Open in browser:
+
+- <http://127.0.0.1:8000>
+
+## Web flow
+
+1. Player 1 joins a room number.
+2. Player 2 joins the same room number.
+3. Both players play in separate browser tabs/windows.
+4. UI polls game state and enables actions only on your turn.
+
+## API endpoints
+
+- `POST /api/rooms/connect`
+- `GET /api/rooms/{room_number}/status`
+- `GET /api/rooms/{room_number}/state/{player_id}`
+- `POST /api/rooms/{room_number}/action`
+
+## Notes
+
+- Active transport is JSON (no pickle on active API routes).
+- Legacy CLI flow is no longer the primary entry point.

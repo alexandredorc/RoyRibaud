@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoyRibaud - Web</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="bg-shape bg-one"></div>
+    <div class="bg-shape bg-two"></div>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <h1>RoyRibaud</h1>
+        <p>Online duel board MVP</p>
+      </header>
+
+      <section id="join-view" class="card-panel">
+        <h2>Join a Room</h2>
+        <div class="row">
+          <label for="room-input">Room number</label>
+          <input id="room-input" type="number" min="1" max="9998" value="1" />
+        </div>
+        <button id="join-btn" class="btn btn-primary">Connect</button>
+        <p id="join-status" class="status-line"></p>
+      </section>
+
+      <section id="wait-view" class="card-panel hidden">
+        <h2>Waiting Room</h2>
+        <p>Waiting for player 2 to connect...</p>
+        <p id="wait-status" class="status-line"></p>
+      </section>
+
+      <section id="game-view" class="hidden">
+        <div id="turn-banner" class="turn-banner">Turn: -</div>
+
+        <div class="status-grid">
+          <div class="status-pill" id="turn-pill">Turn: -</div>
+          <div class="status-pill" id="deck-pill">Deck: -</div>
+          <div class="status-pill" id="opponent-pill">Opponent cards: -</div>
+          <div class="status-pill" id="message-pill">Status: -</div>
+        </div>
+
+        <div class="board-grid">
+          <article class="card-panel">
+            <h3>Court</h3>
+            <div id="court-cards" class="court-grid"></div>
+          </article>
+
+          <article class="card-panel">
+            <h3>Your hand</h3>
+            <div id="my-hand" class="hand-row"></div>
+          </article>
+        </div>
+
+        <article class="card-panel action-panel">
+          <h3>Action controls</h3>
+          <div class="row split">
+            <div>
+              <label>Base action</label>
+              <div class="inline-actions">
+                <button id="mode-flip" class="btn btn-secondary">Flip court</button>
+                <button id="mode-swap" class="btn btn-secondary">Swap hand/court</button>
+              </div>
+            </div>
+            <div>
+              <label for="visible-checkbox">Visibility on</label>
+              <input id="visible-checkbox" type="checkbox" />
+            </div>
+          </div>
+          <p id="selection-status" class="status-line">Select mode, then cards.</p>
+          <button id="validate-btn" class="btn btn-primary validate-btn" disabled>Validate action</button>
+
+          <div id="pending-panel" class="pending-box hidden">
+            <h4>Pending effect</h4>
+            <p id="pending-text"></p>
+            <div id="pending-actions" class="inline-actions"></div>
+          </div>
+
+          <p id="private-status" class="status-line"></p>
+        </article>
+      </section>
+    </main>
+
+    <script src="/static/app.js" defer></script>
+
+    <dialog id="peek-modal" class="peek-modal">
+      <h2 class="peek-modal__title">Cards Revealed</h2>
+      <p class="peek-modal__subtitle">You peeked at these cards — your opponent cannot see this.</p>
+      <div id="peek-modal-cards" class="peek-modal__cards"></div>
+      <button id="peek-modal-close" class="btn btn-primary">Got it</button>
+    </dialog>
+
+    <dialog id="win-modal" class="win-modal">
+      <div id="win-modal-icon" class="win-modal__icon"></div>
+      <h2 id="win-modal-title" class="win-modal__title"></h2>
+      <p id="win-modal-strategy" class="win-modal__strategy"></p>
+      <p id="win-modal-desc" class="win-modal__desc"></p>
+      <button id="win-modal-replay" class="btn btn-primary win-modal__replay">Play again</button>
+    </dialog>
+  </body>
+</html>
