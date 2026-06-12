@@ -163,8 +163,13 @@ class GameCoreMixin:
             court.append(self._serialize_card(card, card.visible))
 
         pending_effect = None
-        if self.pending_effect is not None and viewer_player_id == self.currentPlayerId:
-            pending_effect = self.pending_effect
+        if self.pending_effect is not None:
+            if viewer_player_id == self.currentPlayerId:
+                # Active player gets full effect data
+                pending_effect = self.pending_effect
+            else:
+                # Inactive player gets only the type — enough to show context, no secret data
+                pending_effect = {"type": self.pending_effect["type"]}
 
         return {
             "in_game": self.in_game,

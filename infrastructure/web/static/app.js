@@ -29,6 +29,7 @@ const modeSwapBtn = document.getElementById("mode-swap");
 const selectionStatus = document.getElementById("selection-status");
 const validateBtn = document.getElementById("validate-btn");
 const pendingPanel = document.getElementById("pending-panel");
+const pendingTitle = document.getElementById("pending-title");
 const pendingText = document.getElementById("pending-text");
 const pendingActions = document.getElementById("pending-actions");
 const privateStatus = document.getElementById("private-status");
@@ -292,10 +293,21 @@ function onMyHandClick(index) {
   renderSelectionStatus();
 }
 
+const OPPONENT_PENDING_MESSAGES = {
+  assassin_peek:  "Opponent is secretly peeking at 2 court cards…",
+  knight_swap:    "Opponent is choosing 2 court cards to swap…",
+  knight_flip:    "Opponent is choosing a court card to flip…",
+  queen_peek:     "Opponent is inspecting 2 of your hand cards…",
+  king_choice:    "Opponent is deciding how to use the King…",
+  king_flip:      "Opponent is choosing a court card to flip with the King…",
+  king_discard:   "Opponent is discarding 2 cards from their hand…",
+};
+
 function renderSelectionStatus() {
   if (!state.game) return;
   if (!state.game.is_my_turn) {
-    selectionStatus.textContent = "Wait for opponent move.";
+    const pendingMsg = OPPONENT_PENDING_MESSAGES[state.game.pending_effect?.type];
+    selectionStatus.textContent = pendingMsg ?? "Opponent is thinking…";
     return;
   }
   if (state.game.pending_effect) {
@@ -325,13 +337,22 @@ function renderPending() {
   pendingActions.innerHTML = "";
   privateStatus.textContent = "";
 
-  if (!state.game.pending_effect || !state.game.is_my_turn) {
+  if (!state.game.pending_effect) {
     pendingPanel.classList.add("hidden");
     state.pendingSelections = [];
     return;
   }
 
+  // Opponent's turn with a pending effect — show read-only info panel
+  if (!state.game.is_my_turn) {
+    pendingPanel.classList.remove("hidden");
+    pendingTitle.textContent = "Opponent is resolving";
+    pendingText.textContent = OPPONENT_PENDING_MESSAGES[state.game.pending_effect.type] ?? "Opponent is resolving an effect…";
+    return;
+  }
+
   pendingPanel.classList.remove("hidden");
+  pendingTitle.textContent = "Pending effect";
   const type = state.game.pending_effect.type;
 
   if (type === "assassin_peek") {
