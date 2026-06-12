@@ -84,6 +84,51 @@
           <p id="private-status" class="status-line"></p>
         </article>
       </section>
+      <details class="rules-panel">
+        <summary class="rules-panel__toggle">Rules &amp; card effects</summary>
+
+        <div class="rules-panel__body">
+          <div class="rules-section">
+            <h3 class="rules-section__title">Ways to win</h3>
+            <ul class="rules-list">
+              <li>
+                <span class="rules-tag rules-tag--win">💒 Wedding</span>
+                Start your turn with <strong>3 Queens</strong> in hand.
+              </li>
+              <li>
+                <span class="rules-tag rules-tag--win">👑 Coronation</span>
+                Have <strong>3 Kings</strong> revealed face-up on the court.
+              </li>
+              <li>
+                <span class="rules-tag rules-tag--win">🗡 Assassination</span>
+                A visible court card is <strong>flanked by 2 visible Assassins</strong>.
+              </li>
+            </ul>
+          </div>
+
+          <div class="rules-section">
+            <h3 class="rules-section__title">Card effects <small>(triggered when revealed on the court)</small></h3>
+            <ul class="rules-list">
+              <li>
+                <span class="rules-tag">🗡 Assassin</span>
+                Secretly <strong>peek at 2 court cards</strong> — only you can see them.
+              </li>
+              <li>
+                <span class="rules-tag">⚔️ Knight</span>
+                <strong>Swap 2 court cards</strong>, then flip one face-down (no extra effect on the flipped card).
+              </li>
+              <li>
+                <span class="rules-tag">👸 Queen</span>
+                <strong>Inspect 2 of your opponent's hand cards</strong>. Any revealed Queens are removed and replaced from the deck.
+              </li>
+              <li>
+                <span class="rules-tag">🤴 King</span>
+                Choose a mode: <strong>Flip</strong> — flip a court card and trigger its effect; or <strong>Draw</strong> — draw 2 cards then discard 2 from your hand.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </details>
     </main>
 
     <script src="/static/app.js" defer></script>
