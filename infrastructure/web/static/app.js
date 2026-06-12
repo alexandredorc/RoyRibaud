@@ -331,7 +331,8 @@ function renderPending() {
     pendingText.textContent = "Pick 2 court cards, then submit.";
     addPendingSubmitButton("Submit peek", () => {
       if (state.pendingSelections.length !== 2) return;
-      submitAction({ type: "assassin_peek", indices: state.pendingSelections.slice(0, 2) });
+      const sorted = state.pendingSelections.slice().sort((a, b) => a - b);
+      submitAction({ type: "assassin_peek", indices: sorted });
     });
     return;
   }
@@ -448,7 +449,7 @@ function togglePendingIndex(index, maxCount) {
 
 const STRATEGY_LABELS = {
   wedding: { name: "Wedding Victory", desc: "3 Queens united — love conquers all." },
-  coronation: { name: "Coronation", desc: "4 Kings gathered — the throne is yours." },
+  coronation: { name: "Coronation", desc: "3 Kings gathered — the throne is yours." },
   assassination: { name: "Assassination", desc: "2 Assassins eliminated their target." },
 };
 
