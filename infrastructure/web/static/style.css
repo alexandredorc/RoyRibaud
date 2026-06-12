@@ -248,6 +248,40 @@ input:disabled {
   margin-top: 10px;
 }
 
+/* Visibility choice modal */
+.visibility-modal {
+  border: none;
+  border-radius: 18px;
+  padding: 28px 24px 24px;
+  max-width: 340px;
+  width: 90%;
+  background: #fffaf0;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+
+.visibility-modal::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.visibility-modal__question {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0 0 20px;
+}
+
+.visibility-modal__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.visibility-modal__btn {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
 /* Peek modal */
 .peek-modal {
   border: none;

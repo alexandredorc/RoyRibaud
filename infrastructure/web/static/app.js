@@ -26,7 +26,6 @@ const courtCards = document.getElementById("court-cards");
 const myHand = document.getElementById("my-hand");
 const modeFlipBtn = document.getElementById("mode-flip");
 const modeSwapBtn = document.getElementById("mode-swap");
-const visibleCheckbox = document.getElementById("visible-checkbox");
 const selectionStatus = document.getElementById("selection-status");
 const validateBtn = document.getElementById("validate-btn");
 const pendingPanel = document.getElementById("pending-panel");
@@ -38,6 +37,24 @@ const peekModalCards = document.getElementById("peek-modal-cards");
 const peekModalClose = document.getElementById("peek-modal-close");
 
 peekModalClose.addEventListener("click", () => peekModal.close());
+
+const visibilityModal = document.getElementById("visibility-modal");
+document.getElementById("visibility-hidden").addEventListener("click", () => submitSwap(false));
+document.getElementById("visibility-visible").addEventListener("click", () => submitSwap(true));
+
+async function submitSwap(visible) {
+  visibilityModal.close();
+  await submitAction({
+    type: "swap_hand_court",
+    hand_index: state.selectedHandIndex,
+    court_index: state.selectedCourtIndex,
+    visible,
+  });
+  state.selectedHandIndex = null;
+  state.selectedCourtIndex = null;
+  renderHands();
+  renderCourt();
+}
 
 const winModal = document.getElementById("win-modal");
 const winModalIcon = document.getElementById("win-modal-icon");
@@ -180,7 +197,6 @@ function renderStatus() {
   const controlsEnabled = state.game.is_my_turn && !state.game.winner;
   modeFlipBtn.disabled = !controlsEnabled;
   modeSwapBtn.disabled = !controlsEnabled;
-  visibleCheckbox.disabled = !controlsEnabled;
 
   const canValidate = controlsEnabled && !state.game.pending_effect &&
     (state.mode === "flip" ? state.selectedCourtIndex != null
@@ -256,16 +272,7 @@ async function validateAction() {
   }
 
   if (state.mode === "swap" && state.selectedHandIndex != null && state.selectedCourtIndex != null) {
-    await submitAction({
-      type: "swap_hand_court",
-      hand_index: state.selectedHandIndex,
-      court_index: state.selectedCourtIndex,
-      visible: visibleCheckbox.checked,
-    });
-    state.selectedHandIndex = null;
-    state.selectedCourtIndex = null;
-    renderHands();
-    renderCourt();
+    visibilityModal.showModal();
     return;
   }
 }

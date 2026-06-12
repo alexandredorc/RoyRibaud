@@ -67,10 +67,6 @@
                 <button id="mode-swap" class="btn btn-secondary">Swap hand/court</button>
               </div>
             </div>
-            <div>
-              <label for="visible-checkbox">Visibility on</label>
-              <input id="visible-checkbox" type="checkbox" />
-            </div>
           </div>
           <p id="selection-status" class="status-line">Select mode, then cards.</p>
           <button id="validate-btn" class="btn btn-primary validate-btn" disabled>Validate action</button>
@@ -97,7 +93,7 @@
               </li>
               <li>
                 <span class="rules-tag rules-tag--win">👑 Coronation</span>
-                Have <strong>3 Kings</strong> revealed face-up on the court.
+                Have <strong>3 Kings</strong> revealed face-up on the court next to each other.
               </li>
               <li>
                 <span class="rules-tag rules-tag--win">🗡 Assassination</span>
@@ -132,6 +128,14 @@
     </main>
 
     <script src="/static/app.js" defer></script>
+
+    <dialog id="visibility-modal" class="visibility-modal">
+      <p class="visibility-modal__question">Place the swapped card…</p>
+      <div class="visibility-modal__actions">
+        <button id="visibility-hidden" class="btn btn-secondary visibility-modal__btn">🙈 Hidden</button>
+        <button id="visibility-visible" class="btn btn-primary visibility-modal__btn">👁 Visible</button>
+      </div>
+    </dialog>
 
     <dialog id="peek-modal" class="peek-modal">
       <h2 class="peek-modal__title">Cards Revealed</h2>
